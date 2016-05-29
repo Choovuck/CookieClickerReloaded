@@ -4,44 +4,34 @@ using System.Collections;
 
 public class UpdateItem : MonoBehaviour
 {
-
-
   //  Components
   public Item item;
-  private GameController gameController;
-  private SoundManager soundManager;
-  private Button myButton;                    // reference to the this Button in Item
-  private Image paidImg;
+  protected GameController gameController;
+  protected SoundManager soundManager;
+  protected Button myButton;
+  protected Image paidImg;
 
   //  System
-  public string ItemTitle;                    //  The item upgrade's name
-  public int ItemCost;                        //  How much item upgrade costs
-  public int gain;                            //  How much CPS upgrade gains
-  public int coefficient;                     //  The coefficent that affects item upgrade's cost
+  public string ItemTitle;
+  public int ItemCost;
 
   //  Texts
-  private Text titleTxt;
-  private Text costTxt;
-  private Text descTxt;
+  protected Text titleTxt;
+  protected Text costTxt;
+  protected Text descTxt;
 
   void Start()
   {
-
     Init();
 
-    //  Add GainItem function to the button
     myButton.onClick.AddListener(() =>
     {
       GainItem();
     });
-
-
   }
 
-  //  Initialize method
   void Init()
   {
-
     if (gameController == null)
     {
       gameController = GameObject.Find("System").GetComponent<GameController>();
@@ -60,31 +50,45 @@ public class UpdateItem : MonoBehaviour
     myButton = GetComponent<Button>();
   }
 
-
-  void GainItem()
+  bool Pay()
   {
     if (gameController.TotalCookies < ItemCost)
     {
       soundManager.PlayErrorSound();
-      return;
+      return false;
     }
 
-    int total = item.ItemCount * (item.CPSGain + gain) - item.total;
     gameController.SpendCookies(ItemCost);
-    item.CPSGain += gain;
-    item.UpdateText();
-    myButton.interactable = false;
-    paidImg.enabled = true;
-    gameController.CookiePerSecond += total;
+    return true;
   }
 
-  //  Refresh texts
+  void GainItem()
+  {
+    if (!Pay())
+      return;
+
+    item.Enable(false);
+    Activate();
+    item.Enable(true);
+
+    myButton.interactable = false;
+    paidImg.enabled = true;
+  }
+
   public void SetTexts()
   {
     titleTxt.text = ItemTitle;
-    costTxt.text = ItemCost.ToString() + "$";
-    descTxt.text = ItemTitle + "s gain +" + gain + " base CPS";
+    costTxt.text = ItemCost.ToString();
+    UpdateDescriptionText();
   }
 
+  protected virtual void UpdateDescriptionText()
+  {
+    // Empty
+  }
 
+  protected virtual void Activate()
+  {
+    // Empty
+  }
 }

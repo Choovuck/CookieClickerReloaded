@@ -1,32 +1,43 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class Item : MonoBehaviour
 {
-
   //Script is attached to each item (child elemnts of Shop panal)
 
   //Components
   private GameController gameController;
   private SoundManager soundManager;
-  private Button myButton;            // reference to the this Button in Item
-
+  private Button myButton;
 
   //System
-  public string ItemTitle;            //  The item's name
-  public int ItemCost;                //  How much item costs
-  public int CPSGain;                 //  How much points will be added to your current CPS
-  public int PerTapGain;              //  How much points will be added for each tap
+  public string ItemTitle;
+  public int BaseCost;
+  public int BaseCPSGain;
+  public int BasePerTapGain;
 
   [HideInInspector]
-  public static float coefficient = 1.15f;             //  The coefficent that affeccts item's cost
+  public int CPSAdditive = 0;
+  [HideInInspector]
+  public float CPSMultiplicative = 1.0f;
+  [HideInInspector]
+  public int PerTapAdditive = 0;
+  [HideInInspector]
+  public float PerTapMultiplicative = 1.0f;
+  [HideInInspector]
+  public float OverallMultiplicative = 1.0f;
+
+  [HideInInspector]
+  public static float CostGrowth = 1.15f;
 
   [HideInInspector]
   public int total;
 
   [HideInInspector]
-  public int ItemCount = 0;
+  public int Count = 0;
+
+  [HideInInspector]
+  private bool isEnabled = true;
 
   //Texts
   private Text titleTxt;
@@ -36,12 +47,11 @@ public class Item : MonoBehaviour
 
   void Start()
   {
-    Init();                         //  Initialize
+    Init();
 
-    //  Add function to button
     myButton.onClick.AddListener(() =>
     {
-      BuyItem();                  //  handle click here
+      Buy();
     });
   }
 
@@ -63,41 +73,89 @@ public class Item : MonoBehaviour
     UpdateText();
   }
 
-  public void BuyItem()
+  bool Pay()
   {
     int Cost = GetCost();
 
     if (gameController.TotalCookies < Cost)
     {
       soundManager.PlayErrorSound();
-      return;
+      return false;
     }
-    
-    gameController.SpendCookies(ItemCost);
-    gameController.CookiePerSecond += CPSGain;
-    gameController.ClickPerTap += PerTapGain;
 
-    ItemCount++;
-    UpdateText();
+    gameController.SpendCookies(Cost);
+    return true;
   }
 
+  public void Buy()
+  {
+    if (!Pay())
+      return;
+
+    Enable(false);
+    Count++;
+    Enable(true);
+  }
 
   public void UpdateText()
   {
     titleTxt.text = ItemTitle;
-    costTxt.text = ItemCost.ToString() + "$";
-    countTxt.text = ItemCount.ToString();
-    descTxt.text = "Each " + ItemTitle + " produce " + CPSGain + " cookies per second\n";
-
-    if (ItemCount != 0)
+    costTxt.text = GetCost().ToString();
+    countTxt.text = Count.ToString();
+    descTxt.text = "Each " + ItemTitle + " produce " + GetCPS() + " cookies per second\n";
+    
+    if (Count != 0)
     {
-      total = ItemCount * CPSGain;
-      descTxt.text += ItemCount + " " + ItemTitle + " producing " + total + " ccokies per second";
+      descTxt.text += Count + " " + ItemTitle + " producing " + GetOverallCPS() + " ccokies per second";
     }
   }
 
   int GetCost()
   {
-    return ItemCost * Mathf.FloorToInt(Mathf.Pow(coefficient, ItemCount));
+    return Mathf.FloorToInt(BaseCost * Mathf.Pow(CostGrowth, Count));
+  }
+
+  int GetCPS()
+  {
+    return Mathf.FloorToInt(
+        (BaseCPSGain + CPSAdditive) * CPSMultiplicative
+      );
+  }
+
+  int GetOverallCPS()
+  {
+    return Mathf.FloorToInt(
+        GetCPS() * Count * OverallMultiplicative
+      );
+  }
+
+  int GetPerTapGain()
+  {
+    return Mathf.FloorToInt(
+        (BasePerTapGain + PerTapAdditive) * PerTapMultiplicative
+      );
+  }
+
+  int GetOverallPerTapGain()
+  {
+    return Mathf.FloorToInt(
+        GetPerTapGain() * Count * OverallMultiplicative
+      );
+  }
+  
+  public void Enable(bool _IsEnabled)
+  {
+    if (isEnabled == _IsEnabled)
+      return;
+
+    isEnabled = _IsEnabled;
+
+    int sign = isEnabled ? 1 : -1;
+
+    gameController.ChangeCPS(GetOverallCPS()        * sign);
+    gameController.ChangeCPT(GetOverallPerTapGain() * sign);
+
+    if (isEnabled)
+      UpdateText();
   }
 }

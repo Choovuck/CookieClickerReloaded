@@ -2,23 +2,20 @@
 using UnityEngine.UI;
 using System.Collections;
 
-
-
 public class GameController : MonoBehaviour
 {
-
   //Script is attached to System GO
 
   //  Components
   private SoundManager soundManager;
 
   //  Game 
-  public int CookiePerSecond;                         //  Give cookie per second
-  public int ClickPerTap;                             //  Give cookie per tap
-  public int TotalCookies;                            //  Total cookie (current)
+  public int CookiesPerSecond;
+  public int CookiesPerTap;
+  public int TotalCookies;
 
   //  Systems
-  public Vector2 newPos;                              //  New position to Scale Cookie
+  public Vector2 newPos;
   private Vector2 oldPos;
 
   //  CookieComponents
@@ -28,8 +25,8 @@ public class GameController : MonoBehaviour
 
   void Start()
   {
-    Init();                                         //  Initialize
-    InvokeRepeating("GiveCookiePerSecond", 0, 1);   //  Start give cookie each second
+    Init();
+    InvokeRepeating("GiveCookiePerSecond", 0, 1);
   }
 
   void Update()
@@ -39,6 +36,9 @@ public class GameController : MonoBehaviour
 
   void Init()
   {
+    // $$ this must execute before loading
+    CookiesPerTap = 1;
+
     CookieGO = GameObject.FindGameObjectWithTag("Cookie");
     CookieTransform = CookieGO.GetComponent<RectTransform>();
 
@@ -49,16 +49,15 @@ public class GameController : MonoBehaviour
 
     CookieBtn.onClick.AddListener(() =>
     {
-      Click();  // handle click here
+      Click();
     });
   }
-  
-  //  Click function handler
+
   public void Click()
   {
-    string str = ClickPerTap.ToString() + "x";
+    string str = "+" + CookiesPerTap.ToString();
 
-    TotalCookies += ClickPerTap;
+    TotalCookies += CookiesPerTap;
 
     StartCoroutine("resize");
     soundManager.PlayClickSound();
@@ -66,7 +65,6 @@ public class GameController : MonoBehaviour
   }
 
 
-  //  Instantiate text
   void InstantiateText(string str)
   {
     float randomX = Input.mousePosition.x + Random.Range(-20, 20); //  - random range of x-axis of mouse
@@ -96,11 +94,21 @@ public class GameController : MonoBehaviour
 
   void GiveCookiePerSecond()
   {
-    TotalCookies += CookiePerSecond; 
+    TotalCookies += CookiesPerSecond; 
   }
 
   public void SpendCookies(int amount)
   {
     TotalCookies -= amount;
+  }
+
+  public void ChangeCPS(int value)
+  {
+    CookiesPerSecond += value;
+  }
+
+  public void ChangeCPT(int value)
+  {
+    CookiesPerTap += value;
   }
 }
