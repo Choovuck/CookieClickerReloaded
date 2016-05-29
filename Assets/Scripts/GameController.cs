@@ -74,7 +74,7 @@ public class GameController : MonoBehaviour
     Vector3 pos = new Vector3(randomX, Input.mousePosition.y, Input.mousePosition.z);
     GameObject t = Instantiate(Resources.Load("GeneratedText", typeof(GameObject)), pos, Quaternion.identity) as GameObject;
     t.GetComponent<Text>().text = str;
-    t.transform.parent = CookieGO.transform;
+    t.transform.SetParent(CookieGO.transform);
   }
 
   IEnumerator resize()
@@ -97,5 +97,10 @@ public class GameController : MonoBehaviour
   void GiveCookiePerSecond()
   {
     TotalCookies += CookiePerSecond; 
+  }
+
+  public void SpendCookies(int amount)
+  {
+    TotalCookies -= amount;
   }
 }
