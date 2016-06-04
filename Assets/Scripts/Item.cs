@@ -75,7 +75,7 @@ public class Item : MonoBehaviour
 
   bool Pay()
   {
-    int Cost = GetCost();
+    float Cost = GetCost();
 
     if (gameController.TotalCookies < Cost)
     {
@@ -100,47 +100,39 @@ public class Item : MonoBehaviour
   public void UpdateText()
   {
     titleTxt.text = ItemTitle;
-    costTxt.text = GetCost().ToString();
+    costTxt.text = Mathf.CeilToInt(GetCost()).ToString();
     countTxt.text = Count.ToString();
-    descTxt.text = "Each " + ItemTitle + " produce " + GetCPS() + " cookies per second\n";
+    descTxt.text = "Each " + ItemTitle + " produce " + Mathf.CeilToInt(GetCPS()) + " cookies per second\n";
     
     if (Count != 0)
     {
-      descTxt.text += Count + " " + ItemTitle + " producing " + GetOverallCPS() + " ccokies per second";
+      descTxt.text += Count + " " + ItemTitle + " producing " + Mathf.CeilToInt(GetOverallCPS()) + " ccokies per second";
     }
   }
 
-  int GetCost()
+  float GetCost()
   {
-    return Mathf.FloorToInt(BaseCost * Mathf.Pow(CostGrowth, Count));
+    return BaseCost * Mathf.Pow(CostGrowth, Count);
   }
 
-  int GetCPS()
+  float GetCPS()
   {
-    return Mathf.FloorToInt(
-        (BaseCPSGain + CPSAdditive) * CPSMultiplicative
-      );
+    return (BaseCPSGain + CPSAdditive) * CPSMultiplicative;
   }
 
-  int GetOverallCPS()
+  float GetOverallCPS()
   {
-    return Mathf.FloorToInt(
-        GetCPS() * Count * OverallMultiplicative
-      );
+    return GetCPS() * Count * OverallMultiplicative;
   }
 
-  int GetPerTapGain()
+  float GetPerTapGain()
   {
-    return Mathf.FloorToInt(
-        (BasePerTapGain + PerTapAdditive) * PerTapMultiplicative
-      );
+    return (BasePerTapGain + PerTapAdditive) * PerTapMultiplicative;
   }
 
-  int GetOverallPerTapGain()
+  float GetOverallPerTapGain()
   {
-    return Mathf.FloorToInt(
-        GetPerTapGain() * Count * OverallMultiplicative
-      );
+    return GetPerTapGain() * Count * OverallMultiplicative;
   }
   
   public void Enable(bool _IsEnabled)
@@ -150,7 +142,7 @@ public class Item : MonoBehaviour
 
     isEnabled = _IsEnabled;
 
-    int sign = isEnabled ? 1 : -1;
+    float sign = isEnabled ? 1.0f : -1.0f;
 
     gameController.ChangeCPS(GetOverallCPS()        * sign);
     gameController.ChangeCPT(GetOverallPerTapGain() * sign);

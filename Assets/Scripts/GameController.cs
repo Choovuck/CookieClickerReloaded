@@ -10,9 +10,9 @@ public class GameController : MonoBehaviour
   private SoundManager soundManager;
 
   //  Game 
-  public int CookiesPerSecond;
-  public int CookiesPerTap;
-  public int TotalCookies;
+  public float CookiesPerSecond;
+  public float CookiesPerTap;
+  public float TotalCookies;
 
   //  Systems
   public Vector2 newPos;
@@ -26,12 +26,11 @@ public class GameController : MonoBehaviour
   void Start()
   {
     Init();
-    InvokeRepeating("GiveCookiePerSecond", 0, 1);
   }
 
   void Update()
   {
-    // Empty 
+    TotalCookies += CookiesPerSecond * Time.deltaTime;
   }
 
   void Init()
@@ -92,22 +91,17 @@ public class GameController : MonoBehaviour
     CookieTransform.sizeDelta = Vector2.Lerp(CookieTransform.sizeDelta, oldPos, 3f);
   }
 
-  void GiveCookiePerSecond()
-  {
-    TotalCookies += CookiesPerSecond; 
-  }
-
-  public void SpendCookies(int amount)
+  public void SpendCookies(float amount)
   {
     TotalCookies -= amount;
   }
 
-  public void ChangeCPS(int value)
+  public void ChangeCPS(float value)
   {
     CookiesPerSecond += value;
   }
 
-  public void ChangeCPT(int value)
+  public void ChangeCPT(float value)
   {
     CookiesPerTap += value;
   }
