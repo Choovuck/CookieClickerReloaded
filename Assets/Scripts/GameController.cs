@@ -61,6 +61,12 @@ public class GameController : MonoBehaviour
     StartCoroutine("resize");
     soundManager.PlayClickSound();
     InstantiateText(str);
+
+    foreach(var bg in GameObject.FindGameObjectsWithTag("RotatingBackground"))
+    {
+      var rbg = bg.GetComponent<RotationBG>();
+      rbg.Push();
+    }
   }
 
 
