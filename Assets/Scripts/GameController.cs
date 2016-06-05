@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameController : MonoBehaviour
 {
