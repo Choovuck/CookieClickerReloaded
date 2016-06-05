@@ -15,6 +15,8 @@ public class UpdateItem : MonoBehaviour
   public string ItemTitle;
   public int ItemCost;
 
+  private bool isBought = false;
+
   //  Texts
   protected Text titleTxt;
   protected Text costTxt;
@@ -23,11 +25,6 @@ public class UpdateItem : MonoBehaviour
   void Start()
   {
     Init();
-
-    myButton.onClick.AddListener(() =>
-    {
-      GainItem();
-    });
   }
 
   void Init()
@@ -48,6 +45,14 @@ public class UpdateItem : MonoBehaviour
     SetTexts();
 
     myButton = GetComponent<Button>();
+
+    myButton.onClick.AddListener(() =>
+    {
+      GainItem();
+    });
+
+    if (isBought)
+      OnBought();
   }
 
   bool Pay()
@@ -64,13 +69,20 @@ public class UpdateItem : MonoBehaviour
 
   void GainItem()
   {
-    if (!Pay())
+    if (isBought || !Pay())
       return;
 
     item.Enable(false);
     Activate();
     item.Enable(true);
 
+    isBought = true;
+
+    OnBought();
+  }
+
+  void OnBought()
+  {
     myButton.interactable = false;
     paidImg.enabled = true;
   }
@@ -80,6 +92,19 @@ public class UpdateItem : MonoBehaviour
     titleTxt.text = ItemTitle;
     costTxt.text = ItemCost.ToString();
     UpdateDescriptionText();
+  }
+
+  public void Save(Serializer serializer)
+  {
+    serializer.Save(isBought);
+  }
+
+  public void Load(Deserializer deserializer)
+  {
+    if (!deserializer.IsValid)
+      return;
+
+    deserializer.Load(ref isBought);
   }
 
   protected virtual void UpdateDescriptionText()

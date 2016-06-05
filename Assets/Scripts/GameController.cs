@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameController : MonoBehaviour
 {
@@ -26,11 +28,60 @@ public class GameController : MonoBehaviour
   void Start()
   {
     Init();
+    Load();
   }
 
   void Update()
   {
     TotalCookies += CookiesPerSecond * Time.deltaTime;
+  }
+
+  void Save()
+  {
+    if (!Directory.Exists("Save"))
+      Directory.CreateDirectory("Save");
+
+    var serializer = new Serializer("Save/game.dat");
+
+    serializer
+      .Save(TotalCookies)
+      .Save(CookiesPerSecond)
+      .Save(CookiesPerTap);
+
+    Item[] items = Resources.FindObjectsOfTypeAll(typeof(Item)) as Item[];
+    foreach (var item in items)
+      item.Save(new Serializer("Save/item_" + item.ItemTitle + ".dat"));
+
+    UpdateItem[] updateItems = Resources.FindObjectsOfTypeAll(typeof(UpdateItem)) as UpdateItem[];
+    foreach (var item in updateItems)
+      item.Save(new Serializer("Save/updateitem_" + item.ItemTitle + ".dat"));
+  }
+
+  void OnApplicationQuit()
+  {
+    Save();
+  }
+
+  void Load()
+  {
+    if (!Directory.Exists("Save"))
+      return;
+
+    var deserializer = new Deserializer("Save/game.dat");
+
+    if (deserializer.IsValid)
+      deserializer
+        .Load(ref TotalCookies)
+        .Load(ref CookiesPerSecond)
+        .Load(ref CookiesPerTap);
+
+    Item[] items = Resources.FindObjectsOfTypeAll(typeof(Item)) as Item[];
+    foreach (var item in items)
+      item.Load(new Deserializer("Save/item_" + item.ItemTitle + ".dat"));
+
+    UpdateItem[] updateItems = Resources.FindObjectsOfTypeAll(typeof(UpdateItem)) as UpdateItem[];
+    foreach (var item in updateItems)
+      item.Load(new Deserializer("Save/updateitem_" + item.ItemTitle + ".dat"));
   }
 
   void Init()

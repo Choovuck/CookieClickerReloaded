@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Item : MonoBehaviour
@@ -48,11 +50,31 @@ public class Item : MonoBehaviour
   void Start()
   {
     Init();
+  }
 
-    myButton.onClick.AddListener(() =>
-    {
-      Buy();
-    });
+  public void Save(Serializer serializer)
+  {
+    serializer
+      .Save(CPSAdditive)
+      .Save(CPSMultiplicative)
+      .Save(PerTapAdditive)
+      .Save(PerTapMultiplicative)
+      .Save(OverallMultiplicative)
+      .Save(Count);
+  }
+
+  public void Load(Deserializer deserializer)
+  {
+    if (!deserializer.IsValid)
+      return;
+
+    deserializer
+      .Load(ref CPSAdditive)
+      .Load(ref CPSMultiplicative)
+      .Load(ref PerTapAdditive)
+      .Load(ref PerTapMultiplicative)
+      .Load(ref OverallMultiplicative)
+      .Load(ref Count);
   }
 
   void Init()
@@ -63,7 +85,12 @@ public class Item : MonoBehaviour
     }
 
     soundManager = GameObject.Find("System").GetComponent<SoundManager>();
+
     myButton = GetComponent<Button>();
+    myButton.onClick.AddListener(() =>
+    {
+      Buy();
+    });
 
     titleTxt = transform.FindChild("Title").GetComponent<Text>();
     countTxt = transform.FindChild("Count").GetComponent<Text>();
