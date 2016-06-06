@@ -69,24 +69,21 @@ public class GUI : MonoBehaviour
   {
     CloseOtherWindows(shop);
 
-    bool temp = (shop.activeSelf == true) ? false : true;
-    shop.SetActive(temp);
+    shop.SetActive(!shop.activeSelf);
   }
 
   public void OpenCloseSettings()
   {
     CloseOtherWindows(settings);
-
-    bool temp = (settings.activeSelf == true) ? false : true;
-    settings.SetActive(temp);
+    
+    settings.SetActive(!shop.activeSelf);
   }
 
   public void OpenCloseExit()
   {
     CloseOtherWindows(exit);
-
-    bool temp = (exit.activeSelf == true) ? false : true;
-    exit.SetActive(temp);
+    
+    exit.SetActive(!shop.activeSelf);
   }
 
   public void ExitGameBtn()
@@ -97,43 +94,25 @@ public class GUI : MonoBehaviour
 
   public void CloseOtherWindows(GameObject _windows)
   {
-    var t = GameObject.FindGameObjectsWithTag("Panel");
-    for (int i = 0; i < t.Length; i++)
-    {
-      if (t[i] == _windows)
-      {
-        continue;
-      }
-      t[i].SetActive(false);
-    }
+    foreach (var panel in GameObject.FindGameObjectsWithTag("Panel"))
+      if (panel != _windows)
+        panel.SetActive(false);
   }
 
   public void OnOffSound(Button soundBtn)
   {
     audioSource[0].enabled = !audioSource[0].enabled;
 
-    if (audioSource[0].enabled == false)
-    {
-      soundBtn.gameObject.GetComponent<Image>().sprite = soundOffImg;
-    }
-    else
-    {
-      soundBtn.gameObject.GetComponent<Image>().sprite = soundOnImg;
-    }
+    var img = audioSource[0].enabled ? soundOnImg : soundOffImg;
+    soundBtn.gameObject.GetComponent<Image>().sprite = img;
   }
 
   public void OnOffMusic(Button musicBtn)
   {
     audioSource[1].enabled = !audioSource[1].enabled;
 
-    if (audioSource[1].enabled == false)
-    {
-      musicBtn.gameObject.GetComponent<Image>().sprite = musicOffImg;
-    }
-    else
-    {
-      musicBtn.gameObject.GetComponent<Image>().sprite = musicOnImg;
-    }
+    var img = audioSource[1].enabled ? musicOnImg : musicOffImg;
+    musicBtn.gameObject.GetComponent<Image>().sprite = img;
   }
 
   void Update()
@@ -141,14 +120,12 @@ public class GUI : MonoBehaviour
     UpdateText();
 
     if (Input.GetKeyDown(KeyCode.Escape))
-    {
       OpenCloseExit();
-    }
   }
 
   void UpdateText()
   {
-    totalCookiesText.text = Mathf.FloorToInt(gameController.TotalCookies).ToString();
+    totalCookiesText.text = Utils.ShortNumberString(gameController.TotalCookies);
     perSecondText.text = "CPS: " + gameController.CookiesPerSecond.ToString();
   }
 }

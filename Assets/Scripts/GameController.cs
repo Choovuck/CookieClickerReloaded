@@ -85,6 +85,9 @@ public class GameController : MonoBehaviour
 
   void Init()
   {
+    //$$ testing
+    test();
+
     // $$ this must execute before loading
     CookiesPerTap = 1;
 
@@ -160,5 +163,17 @@ public class GameController : MonoBehaviour
   public void ChangeCPT(float value)
   {
     CookiesPerTap += value;
+  }
+
+
+  // $$ remove
+  void test()
+  {
+    Debug.Log(Utils.ShortNumberString(1000000.0f));
+    Debug.Log(Utils.ShortNumberString(1200000000.0f));
+    Debug.Log(Utils.ShortNumberString(103000000000.1f));
+    Debug.Log(Utils.ShortNumberString(12345678123123123.12f));
+    Debug.Log(Utils.ShortNumberString(12345678123123123123.123786f));
+    Debug.Log(Utils.ShortNumberString(12345678123123123123123123.123f));
   }
 }
