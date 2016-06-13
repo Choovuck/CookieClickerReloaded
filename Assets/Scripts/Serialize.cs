@@ -13,6 +13,11 @@ public abstract class SerialBase
     Init();
   }
 
+  ~SerialBase()
+  {
+    fs.Close();
+  }
+
   protected virtual void Init() { bf = new BinaryFormatter(); }
 }
 

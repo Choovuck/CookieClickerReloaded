@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.IO;
+using System;
 
 public class GameController : MonoBehaviour
 {
@@ -14,20 +15,25 @@ public class GameController : MonoBehaviour
   public float CookiesPerSecond;
   public float CookiesPerTap;
   public float TotalCookies;
+  public float CookiesGenerationRate;
+
+  private long LastSaveTime = 0;
 
   //  Systems
   public Vector2 newPos;
   private Vector2 oldPos;
 
-  //  CookieComponents
   private GameObject CookieGO;
   private Button CookieBtn;
   private RectTransform CookieTransform;
+
+  private Notification notification;
 
   void Start()
   {
     Init();
     Load();
+    Simulate();
   }
 
   void Update()
@@ -45,7 +51,9 @@ public class GameController : MonoBehaviour
     serializer
       .Save(TotalCookies)
       .Save(CookiesPerSecond)
-      .Save(CookiesPerTap);
+      .Save(CookiesPerTap)
+      .Save(CookiesGenerationRate)
+      .Save(DateTime.Now.Ticks);
 
     Item[] items = Resources.FindObjectsOfTypeAll(typeof(Item)) as Item[];
     foreach (var item in items)
@@ -72,7 +80,9 @@ public class GameController : MonoBehaviour
       deserializer
         .Load(ref TotalCookies)
         .Load(ref CookiesPerSecond)
-        .Load(ref CookiesPerTap);
+        .Load(ref CookiesPerTap)
+        .Load(ref CookiesGenerationRate)
+        .Load(ref LastSaveTime);
 
     Item[] items = Resources.FindObjectsOfTypeAll(typeof(Item)) as Item[];
     foreach (var item in items)
@@ -89,6 +99,30 @@ public class GameController : MonoBehaviour
       return;
 
     Directory.Delete("Save", true);
+  }
+
+  void Simulate()
+  {
+    if (LastSaveTime <= 0)
+      return;
+
+    TimeSpan elapsed = DateTime.Now - new DateTime(LastSaveTime);
+    float cookiesGain = (float)elapsed.TotalSeconds * CookiesPerSecond * CookiesGenerationRate;
+
+    if (cookiesGain <= 0)
+      return;
+
+    ShowNotification(
+        "While you were away, " + Utils.ShortNumberString(cookiesGain).ToString() + " cookies were baked!",
+        5.0f
+      );
+
+    TotalCookies += cookiesGain;
+  }
+
+  void ShowNotification(string text, float seconds)
+  {
+    notification.Show(text, seconds);
   }
 
   void Init()
@@ -111,6 +145,8 @@ public class GameController : MonoBehaviour
     {
       Click();
     });
+
+    notification = GameObject.FindGameObjectWithTag("Notification").GetComponent<Notification>();
   }
 
   public void Click()
@@ -130,11 +166,9 @@ public class GameController : MonoBehaviour
     }
   }
 
-
   void InstantiateText(string str)
   {
-    float randomX = Input.mousePosition.x + Random.Range(-20, 20); //  - random range of x-axis of mouse
-                                                                   // float randomY = Input.mousePosition.y + Random.Range(-10, 15);     - random range of y-axis of mouse
+    float randomX = Input.mousePosition.x + UnityEngine.Random.Range(-20, 20);
     Vector3 pos = new Vector3(randomX, Input.mousePosition.y, Input.mousePosition.z);
     GameObject t = Instantiate(Resources.Load("GeneratedText", typeof(GameObject)), pos, Quaternion.identity) as GameObject;
     t.GetComponent<Text>().text = str;
