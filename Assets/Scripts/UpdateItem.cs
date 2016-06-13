@@ -72,9 +72,13 @@ public class UpdateItem : MonoBehaviour
     if (isBought || !Pay())
       return;
 
-    item.Enable(false);
+    if (item != null)
+      item.Enable(false);
+
     Activate();
-    item.Enable(true);
+
+    if (item != null)
+      item.Enable(true);
 
     isBought = true;
 

@@ -120,6 +120,11 @@ public class GameController : MonoBehaviour
     TotalCookies += cookiesGain;
   }
 
+  public void ChangeGenerationRate(float change)
+  {
+    CookiesGenerationRate = Mathf.Clamp01(CookiesGenerationRate + change);
+  }
+
   void ShowNotification(string text, float seconds)
   {
     notification.Show(text, seconds);
@@ -206,7 +211,6 @@ public class GameController : MonoBehaviour
   {
     CookiesPerTap += value;
   }
-
 
   // $$ remove
   void test()
