@@ -125,13 +125,13 @@ public class Item : MonoBehaviour
   public void UpdateText()
   {
     titleTxt.text = ItemTitle;
-    costTxt.text = Mathf.CeilToInt(GetCost()).ToString();
-    countTxt.text = Count.ToString();
-    descTxt.text = "Each " + ItemTitle + " produce " + Mathf.CeilToInt(GetCPS()) + " cookies per second\n";
+    costTxt.text = "Cost: " + Mathf.CeilToInt(GetCost()).ToString();
+    countTxt.text = "Owned: " + Count.ToString();
+    descTxt.text = "Each produces " + Mathf.CeilToInt(GetCPS()) + " cookies/s\n";
     
     if (Count != 0)
     {
-      descTxt.text += Count + " " + ItemTitle + " producing " + Mathf.CeilToInt(GetOverallCPS()) + " ccokies per second";
+      descTxt.text += "Overall producing " + Mathf.CeilToInt(GetOverallCPS()) + " cookies/s";
     }
   }
 
