@@ -83,6 +83,14 @@ public class GameController : MonoBehaviour
       item.Load(new Deserializer("Save/updateitem_" + item.ItemTitle + ".dat"));
   }
 
+  public static void DestroySaves()
+  {
+    if (!Directory.Exists("Save"))
+      return;
+
+    Directory.Delete("Save", true);
+  }
+
   void Init()
   {
     //$$ testing
@@ -169,11 +177,6 @@ public class GameController : MonoBehaviour
   // $$ remove
   void test()
   {
-    Debug.Log(Utils.ShortNumberString(1000000.0f));
-    Debug.Log(Utils.ShortNumberString(1200000000.0f));
-    Debug.Log(Utils.ShortNumberString(103000000000.1f));
-    Debug.Log(Utils.ShortNumberString(12345678123123123.12f));
-    Debug.Log(Utils.ShortNumberString(12345678123123123123.123786f));
-    Debug.Log(Utils.ShortNumberString(12345678123123123123123123.123f));
+    
   }
 }

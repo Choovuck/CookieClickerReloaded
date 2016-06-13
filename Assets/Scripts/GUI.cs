@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using UnityEditor;
+using UnityEngine.SceneManagement;
 
 public class GUI : MonoBehaviour
 {
@@ -113,6 +114,19 @@ public class GUI : MonoBehaviour
 
     var img = audioSource[1].enabled ? musicOnImg : musicOffImg;
     musicBtn.gameObject.GetComponent<Image>().sprite = img;
+  }
+
+  public void RestartGame(Button restartBtn)
+  {
+    if (!EditorUtility.DisplayDialog(
+        "Confirm restart",
+        "This will erase your progress. Are you sure?",
+        "Yes",
+        "No"))
+      return;
+
+    GameController.DestroySaves();
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
 
   void Update()
