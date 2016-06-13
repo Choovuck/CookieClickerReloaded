@@ -77,14 +77,14 @@ public class GUI : MonoBehaviour
   {
     CloseOtherWindows(settings);
     
-    settings.SetActive(!shop.activeSelf);
+    settings.SetActive(!settings.activeSelf);
   }
 
   public void OpenCloseExit()
   {
     CloseOtherWindows(exit);
     
-    exit.SetActive(!shop.activeSelf);
+    exit.SetActive(!exit.activeSelf);
   }
 
   public void ExitGameBtn()
