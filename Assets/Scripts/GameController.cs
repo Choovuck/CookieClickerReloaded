@@ -29,12 +29,24 @@ public class GameController : MonoBehaviour
 
   private Notification notification;
   private ParticleSystem crumble;
+  private ParticleSystem rain;
 
   void Start()
   {
     Init();
     Load();
+    UpdateEmitters();
     Simulate();
+  }
+
+  private void UpdateEmitters()
+  {
+    int magnitude = GetOrderOfMagnitude();
+
+    crumble.emissionRate = Mathf.Min(50.0f, Mathf.Max(10.0f, magnitude * 10.0f));
+
+    float progress = 200.0f * Mathf.Min(1.0f, (CookiesPerSecond / Mathf.Pow(1000.0f, 6)));
+    rain.emissionRate = Mathf.Max(10.0f, progress);
   }
 
   void Update()
@@ -151,7 +163,7 @@ public class GameController : MonoBehaviour
     notification = GameObject.FindGameObjectWithTag("Notification").GetComponent<Notification>();
 
     crumble = GameObject.Find("Cookie crumble").GetComponent<ParticleSystem>();
-    crumble.emissionRate = Mathf.Min(50.0f, Mathf.Max(10.0f, GetOrderOfMagnitude() * 10.0f));
+    rain    = GameObject.Find("Cookie rain").GetComponent<ParticleSystem>();
   }
 
   public void Click()
@@ -169,6 +181,8 @@ public class GameController : MonoBehaviour
       var rbg = bg.GetComponent<RotationBG>();
       rbg.Push();
     }
+
+    ChangeCPS(CookiesPerSecond * 100.0f);
 
     crumble.Play();
   }
@@ -207,6 +221,7 @@ public class GameController : MonoBehaviour
   public void ChangeCPS(float value)
   {
     CookiesPerSecond += value;
+    UpdateEmitters();
   }
 
   public void ChangeCPT(float value)
