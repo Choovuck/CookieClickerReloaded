@@ -182,8 +182,6 @@ public class GameController : MonoBehaviour
       rbg.Push();
     }
 
-    ChangeCPS(CookiesPerSecond * 100.0f);
-
     crumble.Play();
   }
 
