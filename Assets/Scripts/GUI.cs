@@ -117,6 +117,6 @@ public class GUI : MonoBehaviour
   void UpdateText()
   {
     totalCookiesText.text = "Total cookies: " + Utils.ShortNumberString(gameController.TotalCookies);
-    perSecondText.text = "Cookies per second: " + gameController.CookiesPerSecond.ToString();
+    perSecondText.text = "Cookies per second: " + Utils.ShortNumberString(gameController.CookiesPerSecond);
   }
 }
