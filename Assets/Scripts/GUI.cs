@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
 using UnityEngine.SceneManagement;
 
 public class GUI : MonoBehaviour
@@ -19,6 +18,7 @@ public class GUI : MonoBehaviour
   public GameObject shop;
   public GameObject settings;
   public GameObject exit;
+  public GameObject restart;
 
   //  Musics sprites
   public Sprite soundOnImg;
@@ -33,30 +33,7 @@ public class GUI : MonoBehaviour
 
   void Init()
   {
-    if (gameController == null)
-    {
-      gameController = GetComponent<GameController>();
-    }
-
-    if (shop == null)
-    {
-      shop = GameObject.Find("Shop");
-    }
-
-    if (settings == null)
-    {
-      settings = GameObject.Find("Settings");
-    }
-
-    if (exit == null)
-    {
-      exit = GameObject.Find("Exit");
-    }
-
-    if (soundOnImg == null || soundOffImg == null || musicOnImg == null || musicOffImg == null)
-    {
-      Debug.Log("Please attach soundon/off or musicon/off img");
-    }
+    gameController = GetComponent<GameController>();
 
     audioSource = FindObjectsOfType<AudioSource>() as AudioSource[];
 
@@ -85,6 +62,13 @@ public class GUI : MonoBehaviour
     CloseOtherWindows(exit);
     
     exit.SetActive(!exit.activeSelf);
+  }
+
+  public void OpenCloseRestart()
+  {
+    CloseOtherWindows(restart);
+
+    restart.SetActive(!restart.activeSelf);
   }
 
   public void ExitGameBtn()
@@ -116,15 +100,8 @@ public class GUI : MonoBehaviour
     musicBtn.gameObject.GetComponent<Image>().sprite = img;
   }
 
-  public void RestartGame(Button restartBtn)
+  public void RestartGame()
   {
-    if (!EditorUtility.DisplayDialog(
-        "Confirm restart",
-        "This will erase your progress. Are you sure?",
-        "Yes",
-        "No"))
-      return;
-
     GameController.DestroySaves();
     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
   }
