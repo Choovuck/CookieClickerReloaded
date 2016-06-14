@@ -28,6 +28,7 @@ public class GameController : MonoBehaviour
   private RectTransform CookieTransform;
 
   private Notification notification;
+  private ParticleSystem crumble;
 
   void Start()
   {
@@ -132,10 +133,6 @@ public class GameController : MonoBehaviour
 
   void Init()
   {
-    //$$ testing
-    test();
-
-    // $$ this must execute before loading
     CookiesPerTap = 1;
 
     CookieGO = GameObject.FindGameObjectWithTag("Cookie");
@@ -152,6 +149,9 @@ public class GameController : MonoBehaviour
     });
 
     notification = GameObject.FindGameObjectWithTag("Notification").GetComponent<Notification>();
+
+    crumble = GameObject.Find("Cookie crumble").GetComponent<ParticleSystem>();
+    crumble.emissionRate = Mathf.Min(50.0f, Mathf.Max(10.0f, GetOrderOfMagnitude() * 10.0f));
   }
 
   public void Click()
@@ -169,6 +169,8 @@ public class GameController : MonoBehaviour
       var rbg = bg.GetComponent<RotationBG>();
       rbg.Push();
     }
+
+    crumble.Play();
   }
 
   void InstantiateText(string str)
@@ -212,9 +214,17 @@ public class GameController : MonoBehaviour
     CookiesPerTap += value;
   }
 
-  // $$ remove
-  void test()
+  private int GetOrderOfMagnitude()
   {
-    
+    float cps = CookiesPerSecond;
+    int magnitude = 1;
+
+    while (cps >= 1)
+    {
+      cps /= 1000.0f;
+      ++magnitude;
+    }
+
+    return magnitude;
   }
 }
