@@ -29,7 +29,7 @@ public class Serializer : SerialBase
   {
     base.Init();
 
-    fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write);
+    fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete);
   }
 
   public Serializer Save<T>(T data)
@@ -51,7 +51,7 @@ public class Deserializer : SerialBase
 
     try
     {
-      fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+      fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete);
     }
     catch (FileNotFoundException)
     {
