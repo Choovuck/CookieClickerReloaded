@@ -94,7 +94,7 @@ public class UpdateItem : MonoBehaviour
   public void SetTexts()
   {
     titleTxt.text = ItemTitle;
-    costTxt.text = ItemCost.ToString();
+    costTxt.text = Utils.ShortNumberString(ItemCost);
     UpdateDescriptionText();
   }
 
