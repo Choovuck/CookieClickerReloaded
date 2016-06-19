@@ -56,10 +56,7 @@ public class GameController : MonoBehaviour
 
   void Save()
   {
-    if (!Directory.Exists("Save"))
-      Directory.CreateDirectory("Save");
-
-    var serializer = new Serializer("Save/game.dat");
+    var serializer = new Serializer(Application.persistentDataPath + "\\game.dat");
 
     serializer
       .Save(TotalCookies)
@@ -70,11 +67,11 @@ public class GameController : MonoBehaviour
 
     Item[] items = Resources.FindObjectsOfTypeAll(typeof(Item)) as Item[];
     foreach (var item in items)
-      item.Save(new Serializer("Save/item_" + item.ItemTitle + ".dat"));
+      item.Save(new Serializer(Application.persistentDataPath + "\\item_" + item.ItemTitle + ".dat"));
 
     UpdateItem[] updateItems = Resources.FindObjectsOfTypeAll(typeof(UpdateItem)) as UpdateItem[];
     foreach (var item in updateItems)
-      item.Save(new Serializer("Save/updateitem_" + item.ItemTitle + ".dat"));
+      item.Save(new Serializer(Application.persistentDataPath + "\\updateitem_" + item.ItemTitle + ".dat"));
   }
 
   void OnApplicationQuit()
@@ -84,34 +81,33 @@ public class GameController : MonoBehaviour
 
   void Load()
   {
-    if (!Directory.Exists("Save"))
+    var deserializer = new Deserializer(Application.persistentDataPath + "\\game.dat");
+
+    if (!deserializer.IsValid)
       return;
 
-    var deserializer = new Deserializer("Save/game.dat");
-
-    if (deserializer.IsValid)
-      deserializer
-        .Load(ref TotalCookies)
-        .Load(ref CookiesPerSecond)
-        .Load(ref CookiesPerTap)
-        .Load(ref CookiesGenerationRate)
-        .Load(ref LastSaveTime);
+    deserializer
+      .Load(ref TotalCookies)
+      .Load(ref CookiesPerSecond)
+      .Load(ref CookiesPerTap)
+      .Load(ref CookiesGenerationRate)
+      .Load(ref LastSaveTime);
 
     Item[] items = Resources.FindObjectsOfTypeAll(typeof(Item)) as Item[];
     foreach (var item in items)
-      item.Load(new Deserializer("Save/item_" + item.ItemTitle + ".dat"));
+      item.Load(new Deserializer(Application.persistentDataPath + "\\item_" + item.ItemTitle + ".dat"));
 
     UpdateItem[] updateItems = Resources.FindObjectsOfTypeAll(typeof(UpdateItem)) as UpdateItem[];
     foreach (var item in updateItems)
-      item.Load(new Deserializer("Save/updateitem_" + item.ItemTitle + ".dat"));
+      item.Load(new Deserializer(Application.persistentDataPath + "\\updateitem_" + item.ItemTitle + ".dat"));
   }
 
   public static void DestroySaves()
   {
-    if (!Directory.Exists("Save"))
+    if (!File.Exists(Application.persistentDataPath + "\\game.dat"))
       return;
 
-    Directory.Delete("Save", true);
+    File.Delete(Application.persistentDataPath + "\\game.dat");
   }
 
   void Simulate()
@@ -163,7 +159,7 @@ public class GameController : MonoBehaviour
     notification = GameObject.FindGameObjectWithTag("Notification").GetComponent<Notification>();
 
     crumble = GameObject.Find("Cookie crumble").GetComponent<ParticleSystem>();
-    rain    = GameObject.Find("Cookie rain").GetComponent<ParticleSystem>();
+    rain = GameObject.Find("Cookie rain").GetComponent<ParticleSystem>();
   }
 
   public void Click()
@@ -176,7 +172,7 @@ public class GameController : MonoBehaviour
     soundManager.PlayClickSound();
     InstantiateText(str);
 
-    foreach(var bg in GameObject.FindGameObjectsWithTag("RotatingBackground"))
+    foreach (var bg in GameObject.FindGameObjectsWithTag("RotatingBackground"))
     {
       var rbg = bg.GetComponent<RotationBG>();
       rbg.Push();
