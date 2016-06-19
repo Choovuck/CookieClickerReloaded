@@ -9,7 +9,7 @@ public class UpdateItemMultiplyBaseCPS : UpdateItem
   {
     base.UpdateDescriptionText();
 
-    descTxt.text = item.ItemTitle + " base CPS multiplies by " + Multiplier.ToString();
+    descTxt.text = item.ItemTitle + " base CPS multiplies by " + (Multiplier + 1.0f).ToString();
   }
 
   protected override void Activate()
